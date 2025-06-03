@@ -10,6 +10,11 @@ fi
 inf=$1 # One of the SAC files, doesn't matter which
 
 infdir=$(dirname "$inf")
+parentdir=$(dirname "$infdir")
+outdir="${parentdir}/results"
+mkdir -p ${outdir}
+
+
 fstem=${inf%.*}
 evstnm=${fstem##*/}
 
@@ -22,7 +27,7 @@ echo $evstnm
 # q
 # EOF
 
-qlmain $fstem "$dir/results"
+qlmain $fstem "$outdir"
 
 # open "$dir/results/$evstnm.pdf"
 
