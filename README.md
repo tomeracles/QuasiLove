@@ -18,7 +18,7 @@
 - *scripts*
   - *run_example_ql.sh*: This runs the ql analysis defined in QuasiLove/quasilove_fns.sh on the example data located in exampledata; it should recreate Fig. 3 of Merry & Eakin, 2024 (minus a couple of annotations). You should find the results and figure in exampledata/results.
   - *bulk_ql_analysis.sh*: This is a simple script (that will however definitely only work on a Mac) that goes through doing the same analysis as above on a whole set of data (see comments at the top of the script for more details). Each time it does the analysis, it throws up the figure to the screen and asks for a rating, which is saved in a logfile.
-  - *bulk_ql_noview.sh*: Same as above but doesn't stop to let you view and rate the results – this is a much better use of time, i.e. let the analysis run through, then subsequently view the results with...
+  - *bulk_ql_noview.sh*: Same as above (although may work on other UNIX machines) but doesn't stop to let you view and rate the results – this is a much better use of time, i.e. let the analysis run through, then subsequently view the results with...
   - *view_ql_results*.sh. As with ```bulk_ql_analysis.sh```, this is written for a Mac — it does the viewing and rating bit of that script.
   - *download_waveforms.py* Script using obspy to download the waveforms that I used in SAC format. Includes some hard-coded info about the event catalogue, networks and data clients. Not well tested. See the comments and/or run ```./scripts/download_waveforms.py --help``` for usage info.
 
