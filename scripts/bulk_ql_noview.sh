@@ -1,10 +1,22 @@
 #!/bin/bash
+# Script to run the QuasiLove detection on a set of waveforms.
+# Usage: ./bulk_ql_noview.sh <directory> [start_date]
+# This script is expecting the <directory> to contain a 'waveforms' subdirectory,
+# in which the SAC waveforms are stored with filenames formatted as 'YYYYMMDDHHMMSS_[NET].[STA].[CHA]'.
+# There should be Z, T and R channels (i.e. already rotated).
 
-source ./codes/quasilove_fns.sh
+# This goes through the waveforms in *reverse* chronological order, optionally starting from a given (upper bound) date
+
+# Figures & results are saved in the 'results' subdirectory of the given directory, to be inspected later (e.g. with the view_ql_results.sh script.)
+
+# After analysis is done, each filename is saved in the logfile in the given directory (<directory>/logfile.txt, not <directory>/results/logfile.txt).
+# If the filename already appears in the logfile, it is skipped.
+
+source ./QuasiLove/quasilove_fns.sh # This is where the qlmain function is defined. If you're not in the parent directory, change this path accordingly.
 
 dir=$1
 logfile1="$1/logfile.txt"
-logfile2="${dir}/results/logfile.txt"
+# logfile2="${dir}/results/logfile.txt"
 
 if [ -z $2 ]; then
 	start='2100'
@@ -23,11 +35,13 @@ for f in $(echo ${dir}/waveforms/??????????????_*.??Z | sed $'s/ /\\\n/g' | sort
 		continue
 	fi
 	if grep -q "$evstnm" "$logfile1"; then
+		# skip file if already in logfile
 		echo "done"
 		continue
 	fi
 	echo $evstnm
-	# ./codes/quasilove.sh $fstem "$dir/results"
+
+	# Do analysis
 	qlmain $fstem "$dir/results"
 
 	echo $evstnm >> $logfile1

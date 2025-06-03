@@ -12,11 +12,13 @@
 # This is for speed purposes so you don't have to click. 
 # Note that it will (try to) kill the Preview windows.
 
-# Results are saved in a logfile, with a rating of 0, 1 or 2, meant to mean
+# Figures & results are saved in the 'results' subdirectory of the given directory.
+
+# Ratings are saved in a logfile, with a rating of 0, 1 or 2, meant to mean
 # 0 = no, 1 = yes, 2 = maybe (perhaps to have another look later).
 # If the filename already appears in the logfile, it is skipped.
 
-source ./QuasiLove/quasilove_fns.sh # This is where the qlmain function is defined
+source ./QuasiLove/quasilove_fns.sh # This is where the qlmain function is defined. If you're not in the parent directory, change this path accordingly.
 
 dir=$1
 logfile1="$1/logfile.txt"
