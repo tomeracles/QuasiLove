@@ -5,7 +5,7 @@ from QL_detection import ql_analysis_from_sac
 from QL_detection import SAC
 from glob import glob
 
-sac = SAC('/usr/local/LINUX_sac/bin/sacinit.sh')
+sac = SAC('/usr/local/LINUX_sac/bin/sacinit.sh') # Here you should put the path to your favourite SAC executable or initialisation script
 
 indir = './Africa/waveforms'
 outdir = './Africa/results'
