@@ -1,6 +1,7 @@
 #!/usr/bin/bash
 # Script to run the QuasiLove detection on a set of waveforms.
-# Usage: ./bulk_ql_noview.sh <directory> [start_date]
+# Recommended to run from parent directory of the QuasiLove directory.
+# Usage: ./scripts/bulk_ql_noview.sh <directory> [start_date]
 # This script is expecting the <directory> to contain a 'waveforms' subdirectory,
 # in which the SAC waveforms are stored with filenames formatted as 'YYYYMMDDHHMMSS_[NET].[STA].[CHA]'.
 # There should be Z, T and R channels (i.e. already rotated).

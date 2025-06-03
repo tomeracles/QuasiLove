@@ -1,4 +1,23 @@
-#!/bin/bash
+#!/usr/bin/bash
+
+# Script to inspect and rate QL analysis results.
+# Usage: ./scripts/view_ql_results.sh <directory> [start_date]
+# This script is expecting the <directory> to contain a 'waveforms' subdirectory,
+# in which the SAC waveforms are stored with filenames formatted as 'YYYYMMDDHHMMSS_[NET].[STA].[CHA]'.
+# There should be Z, T and R channels (i.e. already rotated).
+
+# This looks at the waveforms in *reverse* chronological order, optionally starting from a given (upper bound) date
+
+# This is written for a Mac, so it inspects the figures in Preview,
+# and also uses osascript to bring the Terminal window to the front when rating the results.
+# This is for speed purposes so you don't have to click. 
+# Note that it will (try to) kill the Preview windows.
+
+# Figures & results are saved in the 'results' subdirectory of the given directory.
+
+# Ratings are saved in a logfile, with a rating of 0, 1 or 2, meant to mean
+# 0 = no, 1 = yes, 2 = maybe (perhaps to have another look later).
+# If the filename already appears in the logfile, it is skipped.
 
 dir=$1
 logfile1="$1/logfile.txt"
