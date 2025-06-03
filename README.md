@@ -1,5 +1,5 @@
 # Quasi-Love Wave Detections with SAC
-- Codes for detecting Quasi-Love waves. The main working method uses Bash/SAC/GMT (with a tiny bit of Python). There is also a Python/ObsPy/SAC/PyGMT option which may be working to some extent but is effectively an abandoned work in progress, so may or may not be of interest to anyone.
+- Codes for detecting Quasi-Love waves. The main working method uses Bash/SAC/GMT (with a tiny bit of Python). There is also a Python/ObsPy/PyGMT option which may be working to some extent but is effectively an abandoned work in progress, so may or may not be of interest to anyone.
 - Written by Tom Merry
 - Based on work by: Eakin (2021), Quasi-Love wave scattering reveals tectonic history of Australia and its margins reflected by mantle anisotropy, _Communications Earth & Environment_, 2, 210 https://doi.org/10.1038/s43247-021-00276-7 , original (Matlab) code found at https://github.com/SeismoCaro/Quasi-Love-Wave-Detections
 - Used for: Merry & Eakin (2024), Insights on the African Upper Mantle From Quasi-Love Wave Scattering, _Geochemistry, Geophysics, Geosystems_, 25, https://doi.org/10.1029/2023gc011385 
@@ -12,7 +12,7 @@
 - *QuasiLove*
   - This folder contains codes to be imported in for use in detecting and locating Quasi-Love waves.
   - quasilove_fns.sh: bash functions that run the QL analysis. The main function is qlmain. Most of the maths is done directly in SAC, which is convenient and quick but the language of the SAC macros is a little obscure and not terribly well documented. 
-  - QL_detection.py: python functions (using obspy, pygmt) to process and plot the QL analysis. This is not finished I think —-- it looks like it started to introduce the Hilbert transform but the derivative is still in there. I haven't spent the time to check how close this is to the final method (I have to imagine it would not be that hard to make them identical).
+  - QL_detection.py: python functions (using obspy, pygmt) to process and plot the QL analysis. This is not finished I think —- it looks like it started to introduce the Hilbert transform but the derivative is still in there. I haven't spent the time to check how close this is to the final method (I have to imagine it would not be that hard to make them identical).
 
 - *scripts*
   - *run_example_ql.sh*: This runs the ql analysis defined in QuasiLove/quasilove_fns.sh on the example data located in exampledata; it should recreate Fig. 3 of Merry & Eakin, 2024 (minus a couple of annotations). You should find the results and figure in exampledata/results.
