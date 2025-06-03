@@ -1,11 +1,28 @@
-#!/bin/bash
+#!/usr/bin/bash
+# Script to run the QuasiLove detection on a set of waveforms.
+# Usage: ./bulk_ql_analysis.sh <directory> [start_date]
+# This script is expecting the <directory> to contain a 'waveforms' subdirectory,
+# in which the SAC waveforms are stored with filenames formatted as 'YYYYMMDDHHMMSS_[NET].[STA].[CHA]'.
+# There should be Z, T and R channels (i.e. already rotated).
 
-source ./codes/quasilove_fns.sh
+# This looks at the waveforms in *reverse* chronological order, optionally starting from a given (upper bound) date
+
+# This is written for a Mac, so it inspects the figures in Preview,
+# and also uses osascript to bring the Terminal window to the front when rating the results.
+# This is for speed purposes so you don't have to click. 
+# Note that it will (try to) kill the Preview windows.
+
+# Results are saved in a logfile, with a rating of 0, 1 or 2, meant to mean
+# 0 = no, 1 = yes, 2 = maybe (perhaps to have another look later).
+# If the filename already appears in the logfile, it is skipped.
+
+source ./QuasiLove/quasilove_fns.sh # This is where the qlmain function is defined
 
 dir=$1
 logfile1="$1/logfile.txt"
 logfile2="${dir}/results/logfile.txt"
 
+# Test if a start date has been given
 if [ -z $2 ]; then
 	start='2100'
 else
@@ -27,9 +44,11 @@ for f in $(echo ${dir}/waveforms/??????????????_*.??Z | sed $'s/ /\\\n/g' | sort
 		continue
 	fi
 	echo $evstnm
-	# ./codes/quasilove.sh $fstem "$dir/results"
+
+	# Do the analysis
 	qlmain $fstem "$dir/results"
 	
+	# Inspect the results
 	open "$dir/results/$evstnm.pdf"
 	
 	# Here's a weird command to try to bring the Terminal window to the front. It seems to work [sometimes]
