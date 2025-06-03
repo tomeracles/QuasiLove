@@ -12,11 +12,14 @@
   - This folder contains codes to be imported in for use in detecting and locating Quasi-Love waves
   - quasilove_fns.sh: bash functions that run the QL analysis. The main function is qlmain
 
-More info coming soon
+- *scripts*
+  - *run_example_ql.sh*: This runs the ql analysis defined in QuasiLove/quasilove_fns.sh on the example data located in exampledata; it should recreate Fig. 3 of Merry & Eakin 2024 (minus a couple of annotations). You should find the results and figure in exampledata/results.
+  - *bulk_ql_analysis.sh*: This is a simple script (that will however definitely only work on a Mac) that goes through doing the same analysis as above on a whole set of data (see comments at the top of the script for more details). Each time it does the analysis, it throws up the figure to the screen and asks for a rating, which is saved in a logfile.
 
-**Steps to run**
 
-Coming soon
+**Notes for running the example scripts**
+These are designed to be run from this parent directory, e.g., run ```./scripts/run_example_ql.sh exampledata/waveforms/20150512211258_II.SUR.LHZ```. Note that you can choose any of the Z, R or T channels as the input for this script, it doesn't matter.
+
 
 **Requirements**
 
