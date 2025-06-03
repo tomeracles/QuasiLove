@@ -44,7 +44,7 @@ qlmain_no_plotting() {
     fi
     def_variables "$1" "$2"
 	echo $fstem
-	mkdir tmp
+	mkdir -p tmp
 	cp $R $T $Z ./tmp/
 	fstem=./tmp/$fstem
 	R=$fstem.?HR
@@ -61,12 +61,19 @@ qlmain() {
         echo "Expected quasilove.sh [filestem] [outdir]"
         echo "Try again"
         exit
-    # else
-    #     echo "Running..."
     fi
+	plotting=1
+	if [[ ! -z $3 ]]; then
+		if [[ $3 == "plotoff" ]]; then
+			plotting=0
+		else
+			echo "Unknown option $3, did you mean to write 'plotoff' to disable plotting?"
+			exit
+		fi
+	fi
     def_variables "$1" "$2"
 	echo $fstem
-	mkdir tmp
+	mkdir -p tmp
 	cp $R $T $Z ./tmp/
 	fstem=./tmp/$fstem
 	R=$fstem.?HR
@@ -78,20 +85,40 @@ qlmain() {
 	execute
 	check_it_ran
 	write_results
-	plot_results
+	if (( plotting )); then
+		plot_results
+	fi
 	clean
 }
 
+# polarisation_code() {
+#     cat << EOF > ./tmp/pol.py
+# import sys
+# import numpy as np
+# from numpy import linalg
+# tt, rr, tr = [float(x) for x in sys.argv[1:4]]
+# w, v = linalg.eig(np.array([[tt, tr], [tr, rr]]))
+# l1i = np.argmax(w)
+# l1 = v[:,l1i]
+# angle = np.arctan(l1[1]/l1[0]) * 180/np.pi
+# print(angle)
+# EOF
+# }
+
 polarisation_code() {
-    cat <<- EOF > ./tmp/pol.py
-import sys
-import numpy as np
-from numpy import linalg as LA
+	# Very simple python code that calculates & spits out the polarisation angle from the covariance matrix
+	# it takes the TT, RR and TR covariance values as input
+    cat << EOF > ./tmp/pol.py
+import sys, math
 tt, rr, tr = [float(x) for x in sys.argv[1:4]]
-w, v = LA.eig(np.array([[tt, tr], [tr, rr]]))
-l1i = np.argmax(w)
-l1 = v[l1i]
-angle = np.arctan(l1[1]/l1[0]) * 180/np.pi
+l1 = (tt + rr + ((tt + rr)**2 - 4 * (tt * rr - tr**2))**0.5 ) / 2
+if tr != 0:
+	v1 = tr
+	v2 = l1 - tt
+else:
+	v1 = 1
+	v2 = 0
+angle = math.atan(v2/v1) * 180 / math.pi
 print(angle)
 EOF
 }
@@ -111,8 +138,8 @@ write_sac_macro() {
 	setbb gcarc &1,gcarc
 	
 	* Define search window for Love
-	evaluate to tGmin (div &1,dist 4.7)
-	setbb tGmax (div &1,dist 3.8)
+	setbb tGmin (%dist% / 4.7)
+	setbb tGmax (%dist% / 3.8)
 	mtw %tGmin %tGmax
 	markptp l 250 to t0
 	setbb Gwind1 ((min &1,t0 &1,t1 ) - 100)
@@ -170,6 +197,7 @@ write_sac_macro() {
     setbb covRR &1,depmax
 
     sc python ./tmp/pol.py %covTT %covRR %covTR > ./tmp/G1.pol
+	
     readtable ./tmp/G1.pol
     setbb G1pol &1,depmax
 
@@ -180,8 +208,8 @@ write_sac_macro() {
 	
     * Define search window for Rayleigh
 	r %Z
-	setbb tRmin (max ( div &1,dist 4.1 ) ( %tl + 100 ) )
-	setbb tRmax (div &1,dist 3.3)
+	setbb tRmin (max ( %dist% / 4.1 ) ( %tl + 100 ) )
+	setbb tRmax (%dist% / 3.3)
 	mtw %tRmin %tRmax
 	markptp l 250 to t0
 	setbb Rwind1 ((min &1,t0 &1,t1 ) - 100)
@@ -273,7 +301,7 @@ write_sac_macro() {
 	cut ( %Gwind1 - 50 ) ( %Gwind2 + 50 )
 	r more %T
 	cut off
-	div 1 (max &2,depmax (mul &2,depmin -1))
+	div 1 (max &2,depmax ( &2,depmin * -1 ))
 	correlate master 2
 	abs
 
@@ -294,7 +322,7 @@ write_sac_macro() {
     cut ( %Gwind1 - 50 ) ( %Gwind2 + 50 )
 	r more %T
 	cut off
-	div 1 (max &2,depmax (mul &2,depmin -1))
+	div 1 (max &2,depmax ( &2,depmin * -1 ))
 	correlate master 2
 	dc 2
 	ch t0 0
@@ -325,9 +353,9 @@ write_sac_macro() {
 
 execute() {
 	echo $sac
-	$sac <<-EOF #> /dev/null
+	$sac <<-EOF > /dev/null
 	m ql.m $fstem
-	# echo off
+	echo off
 	q
 	EOF
 	
@@ -352,8 +380,8 @@ write_results() {
 	bb="$fstem".bbinfo
 	stlo=$(awk '$1=="STLO" {print $3*1}' $bb)
 	stla=$(awk '$1=="STLA" {print $3*1}' $bb)
-	stnm=$(awk '$1=="STNM" {print $3}' $bb)
-	net=$(awk '$1=="NET" {print $3}' $bb)
+	stnm=$(awk '$1=="STNM" {print $3}' $bb | tr -d \')
+	net=$(awk '$1=="NET" {print $3}' $bb | tr -d \')
 	evlo=$(awk '$1=="EVLO" {print $3*1}' $bb)
 	evla=$(awk '$1=="EVLA" {print $3*1}' $bb)
 	evdp=$(awk '$1=="EVDP" {print $3*1}' $bb)
@@ -395,6 +423,11 @@ write_results() {
 	scla=$(echo $dxx $dxy | gmt mapproject -JE${stlo}/${stla}/10 -Rg -I -C -Fk | awk '{print $2}')
 	
 	res=${outstem}.results
+
+	writedir=${res%/*}
+	if [ ! -d "$writedir" ]; then
+		mkdir -p "$writedir"
+	fi
 	
 	cat <<- EOF > $res
 	EVTIME EVLO EVLA EVDP MAG STLO STLA GCARC BAZ SNR G1 R1 DTQL DX SCLO SCLA AMPL H/V(R) H/V(QL) CORRAMP G1POL R1POL
@@ -402,6 +435,17 @@ write_results() {
 	EOF
 }
 
+
+sac2xy(){
+	sacf=$1
+	npts=$(gmt convert $sacf -bi1i+l -q79:79)
+	delta=$(gmt convert $sacf -bi1f+l -q0:0)
+	tb=$(gmt convert $sacf -bi1f+l -q5:5)
+	gmt convert $1 -bi1f+l -hi632 | awk -v npts=$npts -v delta=$delta -v tb=$tb 'NR<=npts {
+		t = tb + (NR - 1) * delta
+		print t, $1
+	}'
+}
 
 
 plot_window() {
@@ -439,6 +483,8 @@ plot_results() {
 	
 	gmt begin tmp/tmp
 	gmt basemap -JX20/3 -R$tmin/$tmax/-1.1/1.1 -BWesn -Bya1f.5 -Bxa1000f500 -Y30c
+
+	
 	gmt text -N -F+cTC -D0/1.7 <<-EOF
 	$evdate $evtime   EVLO: $(printf "%.2f" $evlo)@~\260@~   EVLA: $(printf "%.2f" $evla)@~\260@~   EVDP: $(printf "%.0f" $evdp) km   M: ${mag}
 	EOF
@@ -453,10 +499,10 @@ plot_results() {
 	# sac2xy ${T}_norm /dev/stdout | head
 	# sac2xy ${Z}_norm /dev/stdout | head
 	
-	
+	plot_window $tgmin $tgmax green@80
 	# sac2xy ${T}_norm /dev/stdout | gmt plot -h1 -W1p,darkgreen
 	gmt sac ${T}_norm -W1p,darkgreen
-	plot_window $tgmin $tgmax green@80
+	
 	echo "T" | gmt text -D0.2/-0.2 -F+cTL+f12p,Helvetica-Bold,darkgreen
 	plot_tl_tr
 	
@@ -505,22 +551,30 @@ plot_results() {
 	
 	r=$(echo "$Gamp * 1.1" | bc -l)
 	gmt basemap -Y16c -X22c -JX4 -R-$r/$r/-$r/$r -BNWes -Byg100000+l"Radial" -Bxg100000+l"Transverse"
-	paste <(sac2xy $T /dev/stdout ) <(sac2xy $R /dev/stdout) | awk -v t=$tL '$1 > (t -75) && $1 < (t +75)' | gmt plot -i1,3 -W1p -S~n4:+sc1c+d
+	paste <(sac2xy $T /dev/stdout ) <(sac2xy $R /dev/stdout) | 
+		awk -v t=$tL '$1 > (t -75) && $1 < (t +75)' | 
+		gmt plot -i1,3 -W1p -S~n4:+sc1c+d
 	echo "G1" | gmt text -D0.2/-0.2 -F+cTL+f12p,Helvetica-Bold
 	
 	r=$(echo "$Ramp * 1.1" | bc -l)
 	gmt basemap -Y-5.5 -R-$r/$r/-$r/$r -BNWes -Byg100000+l"Vertical" -Bxg100000+l"Radial"
-	paste <(sac2xy $R /dev/stdout ) <(sac2xy $Z /dev/stdout) | awk -v t=$tR '$1 > (t -75) && $1 < (t +75)' | gmt plot -i1,3 -W1p -S~n2:+st0.5+an
+	paste <(sac2xy $R /dev/stdout ) <(sac2xy $Z /dev/stdout) | 
+		awk -v t=$tR '$1 > (t -75) && $1 < (t +75)' | 
+		gmt plot -i1,3 -W1p -S~n2:+st0.5+an
 	echo "R1" | gmt text -D0.2/-0.2 -F+cTL+f12p,Helvetica-Bold
 	
 	r=$(echo "$QLamp * 1.1" | bc -l)
 	gmt basemap -Y-5.5 -R-$r/$r/-$r/$r -BNWes -Byg100000+l"Vertical" -Bxg100000+l"Radial"
-	paste <(sac2xy $R /dev/stdout ) <(sac2xy $Z /dev/stdout) | awk -v t=$tQ '$1 > (t -75) && $1 < (t +75)' | gmt plot -i1,3 -W1p
+	paste <(sac2xy $R /dev/stdout ) <(sac2xy $Z /dev/stdout) | 
+		awk -v t=$tQ '$1 > (t -75) && $1 < (t +75)' | 
+		gmt plot -i1,3 -W1p
 	echo "QL" | gmt text -D0.2/-0.2 -F+cTL+f12p,Helvetica-Bold
 	
 	
 	gmt basemap -Y-5.5 -R-$r/$r/-$r/$r -BNWes -Byg100000+l"Vertical" -Bxg100000+l"H(Radial)"
-	paste <(sac2xy ${R}_hilb /dev/stdout ) <(sac2xy $Z /dev/stdout) | awk -v t=$tQ '$1 > (t -75) && $1 < (t +75)' | gmt plot -i1,3 -W1p
+	paste <(sac2xy ${R}_hilb /dev/stdout ) <(sac2xy $Z /dev/stdout) | 
+		awk -v t=$tQ '$1 > (t -75) && $1 < (t +75)' | 
+		gmt plot -i1,3 -W1p
 	echo "QL" | gmt text -D0.2/-0.2 -F+cTL+f12p,Helvetica-Bold
 	
 	
