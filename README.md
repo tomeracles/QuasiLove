@@ -20,7 +20,7 @@ Coming soon
 
 **Requirements**
 
-**SAC** should be installed and callable by the command ```sac``` (but the path could be defined in the quasilove_fns.sh file). Not sure what minimum version is needed but any reasonably recent one should do. (Maths in sac macros here is written as, e.g., ```a * b``` rather than ```mul a b```; this was because ```mul``` and ```div``` were failing for me on one machine. Hopefully this way is more portable?)
+**SAC** should be installed and callable by the command ```sac``` (but the path could be defined in the quasilove_fns.sh file). This is written for the standard (Linux) distribution of SAC (note that this can also be installed on a Mac!), which means we expect the SAC binary files to be little-endian. Not sure what minimum version of SAC is needed but any reasonably recent one should do. (Maths in sac macros here is written as, e.g., ```a * b``` rather than ```mul a b```; this was because ```mul``` and ```div``` were failing for me on one machine. Hopefully this way is more portable?)
 
 **GMT** version 6+. NB: some versions of ghostscript fail to preserve semi-transparencies from GMT, which would be very annoying for the example figure produced.
 
