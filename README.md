@@ -37,6 +37,61 @@ Note that you can choose any of the Z, R or T channels as the input for this scr
 
 ***
 
+**Interpreting the results**
+
+Results are output in ASCII format in files named ```<datadirectory>/results/<eventcode>_<net>.<sta>.results```, with the following format:
+
+```EVTIME EVLO EVLA EVDP MAG STLO STLA GCARC BAZ SNR G1 R1 DTQL DX SCLO SCLA AMPL H/V(R) H/V(QL) CORRAMP G1POL R1POL```
+
+Sorry about all this, it means
+
+EVTIME: Event time 
+
+EVLO: Event longitude 
+
+EVLA: Event latitude 
+
+EVDP: Event depth 
+
+MAG: Magnitude 
+
+STLO: Station Long. 
+
+STLA: Station Lat. 
+
+GCARC: Great-circle arc distance (deg) 
+
+BAZ: Backazimuth 
+
+SNR: Signal-noise-ratio 
+
+G1: Time of Love max. amplitude (s after origin)
+
+R1: Time of Rayleigh max. amplitude (s after origin)
+
+DTQL: Delay time of Quasi-Love wrt. G1 (s)
+
+DX: Calculated distance of the Quasi-Love scatterer (km)
+
+SCLO: Calculated scatter longitude
+
+SCLA: Calculated scatterer latitude
+
+AMPL: QL amplitude relative to G1
+
+H/V(R): horizontal/vertical ratio of Rayleigh particle motion
+
+H/V(QL): as above for QL
+
+CORRAMP: maximum amplitude of correlation between Quasi-Love and Love waveforms
+
+G1POL: polarisation of G1 (deg from North)
+
+R1POL: polarisation of R1 (deg from North)
+
+
+***
+
 **Requirements**
 
 -  **SAC** should be installed and callable by the command ```sac``` (but the path could be defined in the quasilove_fns.sh file if not). This is written for the standard (Linux) distribution of SAC (note that this can also be installed on a Mac!), which means we expect the SAC binary files to be little-endian. Not sure what minimum version of SAC is needed but any reasonably recent one should do. (Maths in sac macros here is written as, e.g., ```a * b``` rather than ```mul a b```; this was because ```mul``` and ```div``` were failing for me on one machine. Hopefully this way is more portable?)
