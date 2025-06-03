@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # Script to run the QuasiLove detection on a set of waveforms.
 # Usage: ./bulk_ql_noview.sh <directory> [start_date]
 # This script is expecting the <directory> to contain a 'waveforms' subdirectory,
