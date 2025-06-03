@@ -11,8 +11,8 @@
 
 - *QuasiLove*
   - This folder contains codes to be imported in for use in detecting and locating Quasi-Love waves.
-  - quasilove_fns.sh: bash functions that run the QL analysis. The main function is qlmain.
-  - QL_detection.py: python functions (using obspy, pygmt) to process and plot the QL analysis. This is not finished I think —-- it looks like it started to introduce the Hilbert transform but still used the 
+  - quasilove_fns.sh: bash functions that run the QL analysis. The main function is qlmain. Most of the maths is done directly in SAC, which is convenient and quick but the language of the SAC macros is a little obscure and not terribly well documented. 
+  - QL_detection.py: python functions (using obspy, pygmt) to process and plot the QL analysis. This is not finished I think —-- it looks like it started to introduce the Hilbert transform but the derivative is still in there. I haven't spent the time to check how close this is to the final method (I have to imagine it would not be that hard to make them identical).
 
 - *scripts*
   - *run_example_ql.sh*: This runs the ql analysis defined in QuasiLove/quasilove_fns.sh on the example data located in exampledata; it should recreate Fig. 3 of Merry & Eakin, 2024 (minus a couple of annotations). You should find the results and figure in exampledata/results.
@@ -33,6 +33,8 @@ These are designed to be run from this parent directory, e.g., run ```./scripts/
 **Requirements**
 
 **SAC** should be installed and callable by the command ```sac``` (but the path could be defined in the quasilove_fns.sh file). This is written for the standard (Linux) distribution of SAC (note that this can also be installed on a Mac!), which means we expect the SAC binary files to be little-endian. Not sure what minimum version of SAC is needed but any reasonably recent one should do. (Maths in sac macros here is written as, e.g., ```a * b``` rather than ```mul a b```; this was because ```mul``` and ```div``` were failing for me on one machine. Hopefully this way is more portable?)
+
+For more information on SAC macros, which are used for a lot of the calculations in these codes, see _Seismic Analysis Code: A Primer and User's Guide_ by Helffrich, Wookey and Bastow.
 
 **GMT** version 6+. NB: some versions of ghostscript fail to preserve semi-transparencies from GMT, which would be very annoying for the example figure produced.
 
