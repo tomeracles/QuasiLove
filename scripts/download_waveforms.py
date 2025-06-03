@@ -31,7 +31,7 @@ def get_earthquake_catalogue(out = eqcatfile):
                             minmagnitude=6.5, catalog="NEIC PDE", maxdepth=50)
     cat.write(out, format='QUAKEML')
 
-cat = obspy.read_events(eqcatfile)
+
 
 def get_inv(net,sta):
     from obspy import Inventory
@@ -146,7 +146,7 @@ def download(station,event,client,inv, outdir = './Africa/waveforms'):
 def main(outdir = './Africa/waveforms', network = 'GE', stations = 'CSS,KARP',
     minbaz = 0, maxbaz = 360):
     from obspy.geodetics import locations2degrees
-    
+    cat = obspy.read_events(eqcatfile)
     inv, client = get_inv(network, stations)
     for sta in inv[0]:
         sta.network = inv[0].code
@@ -169,6 +169,11 @@ def main(outdir = './Africa/waveforms', network = 'GE', stations = 'CSS,KARP',
 
 if __name__ == '__main__':
     import argparse
+    import os
+    if not os.path.exists('./data'):
+        os.makedirs('./data')
+    if not os.path.exists(eqcatfile):
+        get_earthquake_catalogue()
     parser = argparse.ArgumentParser(description='Download waveforms for QL analysis.')
     parser.add_argument('--outdir', type=str, default='./Africa/waveforms',
                         help='Output directory for waveforms.')
