@@ -3,7 +3,7 @@
 - Written by Tom Merry while at the Research School of Earth Sciences, the Australian National University (ANU), in 2023.
 - Based on work by: Eakin (2021), Quasi-Love wave scattering reveals tectonic history of Australia and its margins reflected by mantle anisotropy, _Communications Earth & Environment_, 2, 210 https://doi.org/10.1038/s43247-021-00276-7 , original (Matlab) code found at https://github.com/SeismoCaro/Quasi-Love-Wave-Detections
 - Used for: Merry & Eakin (2024), Insights on the African Upper Mantle From Quasi-Love Wave Scattering, _Geochemistry, Geophysics, Geosystems_, 25, https://doi.org/10.1029/2023gc011385 
-- This is somewhat of a minor update to the Eakin (2021) method in that it uses the Hilbert transform to compare the vertical and radial motions, plots particle motion and quantifies ellipticity (during the process of TM translating the code to Python, and then, perhaps ill-advisedly, to SAC). See Merry & Eakin (2024) for details.
+- This is somewhat of a minor update to the Eakin (2021) method in that it uses the Hilbert transform to compare the vertical and radial motions, plots particle motion and quantifies ellipticity (implemented during the process of TM translating the code to Python, and then, perhaps ill-advisedly, to SAC). See Merry & Eakin (2024) for details.
 - See below for instructions to reproduce Figure 3 of Merry & Eakin (2024).
 
 ***
