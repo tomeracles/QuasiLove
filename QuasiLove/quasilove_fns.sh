@@ -1,8 +1,13 @@
 #!/usr/bin/bash
 # * Look for potential Quasi-Love waves
-# * USAGE: quasilove.sh filestem outdir 
+#
+# * USAGE: 
+# * In a shell script try:
+# * source quasilove_fns.sh
+# * qlmain filestem outdir [plotoff]
 # * where the components are expected to
 # * be in the file format [filestem].?H[R,T,Z]
+# * The optional 'plotoff' will stop it from plotting the results, to save time if not needed
 # *
 # * waveforms should be filtered with a fmax of 0.01 Hz
 # *
@@ -13,6 +18,7 @@
 # * 3.4 km/s < V(R) < 4.1 km/s
 # *
 
+# If you need to point to a particular SAC installation, do it here.
 # sac=/usr/local/LINUX_sac/bin/sacinit.sh
 sac=sac
 
@@ -33,28 +39,6 @@ def_variables() {
     outstem="${outdir}/$fstem"
 }
 
-
-qlmain_no_plotting() {
-    if [ -z $2 ]; then
-        echo "Expected quasilove.sh [filestem] [outdir]"
-        echo "Try again"
-        exit
-    # else
-    #     echo "Running..."
-    fi
-    def_variables "$1" "$2"
-	echo $fstem
-	mkdir -p tmp
-	cp $R $T $Z ./tmp/
-	fstem=./tmp/$fstem
-	R=$fstem.?HR
-	T=$fstem.?HT
-	Z=$fstem.?HZ
-	write_sac_macro
-	execute
-	write_results
-	clean
-}
 
 qlmain() {
     if [ -z $2 ]; then
@@ -90,20 +74,6 @@ qlmain() {
 	fi
 	clean
 }
-
-# polarisation_code() {
-#     cat << EOF > ./tmp/pol.py
-# import sys
-# import numpy as np
-# from numpy import linalg
-# tt, rr, tr = [float(x) for x in sys.argv[1:4]]
-# w, v = linalg.eig(np.array([[tt, tr], [tr, rr]]))
-# l1i = np.argmax(w)
-# l1 = v[:,l1i]
-# angle = np.arctan(l1[1]/l1[0]) * 180/np.pi
-# print(angle)
-# EOF
-# }
 
 polarisation_code() {
 	# Very simple python code that calculates & spits out the polarisation angle from the covariance matrix
@@ -576,9 +546,6 @@ plot_results() {
 		awk -v t=$tQ '$1 > (t -75) && $1 < (t +75)' | 
 		gmt plot -i1,3 -W1p
 	echo "QL" | gmt text -D0.2/-0.2 -F+cTL+f12p,Helvetica-Bold
-	
-	
-	
 	
 	
 	gmt coast -JE${stlo}/${stla}/10 -Rg -Wthinnest -Ggrey@50 -A100000 -B -X5 -Y5
